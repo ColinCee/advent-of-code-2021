@@ -18,15 +18,13 @@ type Boards []Board
 func prettyPrintBoards(boards Boards) {
 	for _, board := range boards {
 		prettyPrintSingleBoard(board)
+		fmt.Println("")
 	}
 }
 
 func prettyPrintSingleBoard(board Board) {
 	for _, row := range board {
-		for _, column := range row {
-			fmt.Println(column)
-		}
-		fmt.Println("")
+		fmt.Println(row)
 	}
 }
 
@@ -78,6 +76,21 @@ func loadBingoBoards(lines []string) Boards {
 	return bingoBoards
 }
 
+func loadNumbers(lines []string) []int {
+	numberStrings := strings.Split(lines[0], ",")
+	// convert numberStrings to integer array
+	numbers := make([]int, len(numberStrings))
+	for i, v := range numberStrings {
+		number, err := strconv.Atoi(v)
+		if err != nil {
+			panic(err)
+		}
+		numbers[i] = number
+	}
+
+	return numbers
+}
+
 func isRowFullyChecked(board Board, rowIndex int) bool {
 	for _, column := range board[rowIndex] {
 		if !column.checked {
@@ -96,21 +109,18 @@ func isColumnFullyChecked(board Board, columnIndex int) bool {
 	return true
 }
 
-// Returns the winning board and the final number that was played
-func playBingo(numbers string, boards Boards) (Board, int) {
+// Returns when a board wins, with
+// all boards state, the winning board index and the number that was used to win
+func playBingo(numbers []int, boards Boards) (Boards, int, int) {
 
-	// split numbers by comma
-	numbersArray := strings.Split(numbers, ",")
-
-	for _, number := range numbersArray {
+	for _, number := range numbers {
 		// convert string to int
-		numberToInt, _ := strconv.Atoi(number)
 
 		for boardIndex, board := range boards {
 			// This in N^2
 			for rowIndex, row := range board {
 				for columnIndex, column := range row {
-					if column.number == numberToInt {
+					if column.number == number {
 						// We can't use board created by range as it seems to be a copy of the original board
 
 						boards[boardIndex][rowIndex][columnIndex].checked = true
@@ -118,7 +128,7 @@ func playBingo(numbers string, boards Boards) (Board, int) {
 						if isRowFullyChecked(boards[boardIndex], rowIndex) ||
 							isColumnFullyChecked(boards[boardIndex], columnIndex) {
 							fmt.Println("bingo! board index:", boardIndex)
-							return boards[boardIndex], numberToInt
+							return boards, boardIndex, number
 						}
 					}
 				}
@@ -152,9 +162,10 @@ func SolvePartOne() {
 	bingoBoards := loadBingoBoards(lines)
 	prettyPrintBoards(bingoBoards)
 
-	winningBoard, finalNumber := playBingo(lines[0], bingoBoards)
-	prettyPrintSingleBoard(winningBoard)
+	numbers := loadNumbers(lines)
+	boards, winningBoardIndex, finalNumber := playBingo(numbers, bingoBoards)
+	prettyPrintSingleBoard(boards[winningBoardIndex])
 
-	finalScore := calculateScore(winningBoard, finalNumber)
+	finalScore := calculateScore(boards[winningBoardIndex], finalNumber)
 	fmt.Println("final score:", finalScore)
 }
