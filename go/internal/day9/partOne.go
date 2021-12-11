@@ -60,17 +60,21 @@ func doAnyAdjacentCellsHaveSmallerInt(input [][]int, rowIndex int, colIndex int)
 	return false
 }
 
-func debugLowPoints(input [][]int, lowPoints [][]int) {
-
+func copyInputShapeReplaceWithX(input [][]int) [][]string {
 	// copy input size and initialise with X
-	debugLowPoints := make([][]string, len(input))
+	copyInput := make([][]string, len(input))
 	for rowIndex, _ := range input {
-		debugLowPoints[rowIndex] = make([]string, len(input[rowIndex]))
+		copyInput[rowIndex] = make([]string, len(input[rowIndex]))
 		for colIndex, _ := range input[rowIndex] {
-			debugLowPoints[rowIndex][colIndex] = "X"
+			copyInput[rowIndex][colIndex] = "X"
 		}
 	}
+	return copyInput
+}
 
+func debugLowPoints(input [][]int, lowPoints [][]int) {
+
+	debugLowPoints := copyInputShapeReplaceWithX(input)
 	for _, lowPoint := range lowPoints {
 		row := lowPoint[0]
 		col := lowPoint[1]
