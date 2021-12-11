@@ -16,3 +16,17 @@ func PrettyPrint2DIntArray(a [][]int) {
 	}
 	fmt.Printf("\n")
 }
+
+func PrettyPrintStringArray(a []string) {
+	for i := 0; i < len(a); i++ {
+		fmt.Printf("%s ", a[i])
+	}
+	fmt.Printf("\n")
+}
+
+func PrettyPrint2DStringArray(a [][]string) {
+	for i := 0; i < len(a); i++ {
+		PrettyPrintStringArray(a[i])
+	}
+	fmt.Printf("\n")
+}
