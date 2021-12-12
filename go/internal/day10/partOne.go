@@ -32,7 +32,7 @@ func getComplementOpenParenthesis(char rune) rune {
 	return ' '
 }
 
-func isLineLegal(line string) (bool, rune) {
+func isLineLegal(line string) (bool, rune, []rune) {
 	stack := make([]rune, 0)
 
 	for _, c := range line {
@@ -42,18 +42,18 @@ func isLineLegal(line string) (bool, rune) {
 		}
 		// pop char
 		if len(stack) == 0 {
-			return false, c
+			return false, c, stack
 		}
 
 		top := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
 		if top != getComplementOpenParenthesis(c) {
-			return false, c
+			return false, c, stack
 		}
 	}
 
-	return true, ' '
+	return true, ' ', stack
 }
 
 func calculatePoints(lines []string) int {
@@ -67,7 +67,7 @@ func calculatePoints(lines []string) int {
 	}
 
 	for _, line := range lines {
-		isLegal, illegalChar := isLineLegal(line)
+		isLegal, illegalChar, _ := isLineLegal(line)
 		if !isLegal {
 			points += charPointMap[illegalChar]
 		}
